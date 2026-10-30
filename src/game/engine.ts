@@ -153,6 +153,7 @@ export class Game {
 
   setReducedMotion(on: boolean): void {
     this.reducedMotion = on;
+    if (on) this.particles = [];
   }
 
   private get groundY(): number {
@@ -365,17 +366,19 @@ export class Game {
       if (this.snoreIn <= 0) {
         this.snoreIn = rand(3.5, 5);
         if (this.phase !== "over") sfx.snore();
-        this.particles.push({
-          x: HAMSTER_X + 13,
-          y: feetY - 16,
-          vx: 6,
-          vy: -10,
-          life: 0,
-          max: 2.4,
-          color: "#ffffff",
-          size: 1,
-          kind: "z",
-        });
+        if (!this.reducedMotion) {
+          this.particles.push({
+            x: HAMSTER_X + 13,
+            y: feetY - 16,
+            vx: 6,
+            vy: -10,
+            life: 0,
+            max: 2.4,
+            color: "#ffffff",
+            size: 1,
+            kind: "z",
+          });
+        }
       }
     }
   }
@@ -489,7 +492,7 @@ export class Game {
     let sprite: Sprite;
     if (this.phase === "over") sprite = HAMSTER_HURT;
     else if (!this.grounded) sprite = HAMSTER_JUMP;
-    else if (this.asleep) sprite = runFrame ? HAMSTER_SLEEP_A : HAMSTER_SLEEP_B;
+    else if (this.asleep) sprite = this.reducedMotion || runFrame ? HAMSTER_SLEEP_A : HAMSTER_SLEEP_B;
     else if (this.phase === "ready" && this.reducedMotion) sprite = HAMSTER_RUN_A;
     else sprite = runFrame ? HAMSTER_RUN_A : HAMSTER_RUN_B;
     const bounce = this.grounded && this.phase !== "over" && runFrame && !this.reducedMotion ? 1 : 0;

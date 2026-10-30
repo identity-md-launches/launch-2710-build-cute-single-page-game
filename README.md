@@ -58,12 +58,32 @@ scripts/make-art.mjs  regenerates favicon and share image
 dist/                 committed production export
 ```
 
-## Validation (worker-run, 2026-10-30)
+## Revision validation (worker-run, 2026-10-30)
 
-These are the checks run on this machine against the final export. They are the worker's own
-results, not an independent certification. The full record (assumptions, per-domain coverage,
-`file:line` findings) is `artifacts/validation.md`, which is delivered as a separate artifact rather
-than committed.
+Reproduced and fixed the three reported defects with targeted changes to `src/styles.css` and
+`src/game/engine.ts`: sleeping game-over panels fit on narrow/short screens, phone status rows reserve
+space for live labels, and reduced motion stops sleeping sprite/particle decoration. `dist/` is rebuilt.
+
+| Check | Result |
+| --- | --- |
+| `npm run typecheck` and `npm run build` | Both pass; Vite builds 33 modules with relative local assets |
+| Pinned taste@1 probe | 16/16 pass against the production export at 320, 390 and 1440 |
+| Playwright Chromium regression suite, served under `/sub/` | 134 assertions pass across 10 portrait/landscape/desktop sizes, including replay, focus-ring containment, stable live status, sound and API recovery |
+| IDLE-only collision/replay follow-up | 12 checks pass at 320×700 and 568×320, including visible keyboard focus, pointer replay and high-score persistence after reload |
+| Reduced-motion canvas checks (included above) | Eight sampled frames are identical in idle ready mode, both on initial load and after enabling reduced motion; running/jumping and normal idle animation remain available |
+
+The scoped six-domain Better Interface review, reproduction measurements and remaining limitations
+are in [artifacts/validation.md](artifacts/validation.md). Screenshots and temporary harnesses were
+generated under `test/scratch/`, which the assignment removes before submission. Browser MCP returned
+`Transport closed`; the browser checks and viewed screenshots used the supplied local Playwright
+Chromium instead. WebKit could not launch because its browser executable is unavailable. No physical
+phone, screen reader, native zoom or audio-listening check was performed.
+The export is 233,854 bytes; the complete submission candidate is below 0.4 MiB (8 MiB limit).
+
+## Initial implementation validation (worker-run, 2026-10-30)
+
+These earlier results are retained as implementation history; the current revision checks are
+above. All results are worker-run, not an independent certification.
 
 | Check | Command | Result |
 | --- | --- | --- |

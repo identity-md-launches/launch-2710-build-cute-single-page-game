@@ -53,7 +53,7 @@ the top sky band 9.4:1 (day); white on the night sky 10.9–16.8:1.
 | Role | Family | Size token | Weight | Line height |
 | --- | --- | --- | --- | --- |
 | Brand title `h1` | `--font-display` | `--text-xl` 1.75rem | 600 | 1.1 |
-| Sleeping headline | display | `--text-xl`, `--text-2xl` 2.5rem from 40rem | 600 | 1.1 |
+| Sleeping headline | display | `--text-xl`, `--text-2xl` 2.5rem from 40rem; `--text-lg` in short landscape | 600 | 1.1 |
 | Score | display | `--text-xl` | 600 | 1.1 |
 | Block height, button, stat values, result, `h2` | display | `--text-lg` 1.25rem | 600 | 1.1 |
 | Best and combo in the HUD | display | `--text-md` 1rem | 600 | 1.1 |
@@ -78,14 +78,21 @@ the top sky band 9.4:1 (day); white on the night sky 10.9–16.8:1.
 - Order: header (`.topbar`: brand at the leading edge, sound button at the trailing edge), live
   chain strip (`.chain`), stage, help line, stats, about.
 - Breakpoints (content-driven):
-  - Below 30rem the stage is square (`aspect-ratio: 1 / 1`) so the sleeping headline, note and
-    start panel fit at 320px. 30rem and up: 4:3. 40rem and up: 16:9, sleeping headline grows to
-    `--text-2xl`, stats go to three columns.
+  - Below 30rem the stage prefers a square (`aspect-ratio: 1 / 1`). Below 22.5rem it also has a
+    `20.5rem` minimum block size so the sleeping headline, result panel and replay focus ring fit.
+    30rem and up: 4:3. 40rem and up: 16:9, sleeping headline grows to `--text-2xl`, stats go to
+    three columns.
   - `.chain` is two rows (block + status chip, then the full-width progress bar) below 46rem and one
-    row from 46rem.
+    row from 46rem. The chip reserves 63px below 22.5rem and 42px from 22.5rem to 46rem, with
+    vertically centred labels, so ordinary live wheel changes keep the stage in place. Desktop has
+    no minimum chip height.
+  - Landscape viewports up to 28rem high use a 4px overlay gap, 8px overlay block padding,
+    `--text-lg` sleeping text, and 8px panel block padding and gap. The replay target stays 48px.
   - `.stats` is two columns below 40rem; an odd last card spans both.
-- The stage height is also capped at `72svh` so landscape phones keep the button on screen; the
-  engine reads the stage's real size on resize.
+- The stage has a `72svh` maximum block size; the narrow-screen minimum above takes precedence.
+  Short landscape screens can scroll vertically to the scene's controls. The engine reads the
+  stage's real size on resize. Replay containment and stable live status were checked at widths
+  320, 359, 360, 390, 480, 568, 667, 844, 896 and 1440; see `artifacts/validation.md`.
 - Logical properties throughout (`inline-size`, `margin-inline`, `padding-block`, …).
 
 ### The pixel world
@@ -148,7 +155,10 @@ Motion: CSS transitions name their properties (`background-color, color` on the 
 day/night fade, `inline-size` on the progress fill, `scale` on press) and sit inside
 `prefers-reduced-motion: no-preference`. The sleeping headline's dim pulse runs 3 times, not forever.
 Under reduced motion the engine stops the attract scroll before a run, star twinkle, seed bobbing,
-the run bounce, screen shake and speed lines, and cuts particles to a third.
+the run bounce, screen shake and speed lines, and cuts gameplay bursts to a third. Sleeping Z
+particles are disabled and the sleeping hamster uses `HAMSTER_SLEEP_A` without alternating frames.
+Enabling reduced motion clears existing particles immediately. The idle ready scene is still after
+its initial day/night transition; the user-started running and jumping simulation remains available.
 
 ## Do's and Don'ts
 
